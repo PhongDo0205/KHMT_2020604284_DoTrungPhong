@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+        }
+        
+        header nav ul {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+        }
+        
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+        
+        header nav ul li a:hover {
+            background-color: #555;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .intro,
+        .search-bar,
+        .generate-random,
+        .upload-and-generate,
+        .sample-images {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .intro h1,
+        .sample-images h2 {
+            margin-bottom: 10px;
+        }
+        
+        .search-bar input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+        }
+        
+        .sample-gallery-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .sample-gallery {
+            display: flex;
+            gap: 10px;
+            width: calc(110px * 10);
+            /* Adjust based on number of images and their width plus gap */
+            animation: slide 10s linear infinite;
+        }
+        
+        .sample-gallery img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        @keyframes slide {
+            0% {
+                transform: translateX(0);
+            }
+            45% {
+                transform: translateX(-50%);
+            }
+            55% {
+                transform: translateX(-50%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .footer-block {
+            width: 45%;
+        }
+        
+        .footer-block h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/index" id="home-link">Trang chủ</a></li>
+                <li><a href="https://www.facebook.com/do.phong.984" id="about-link">About Me</a></li>
+                <li><a href="#" id="create-link">Create</a></li>
+                <li><a href="#" id="search-link">Tìm kiếm</a></li>
+                {% if logged_in %}
+                <li><a href="/logout" id="auth-link">Đăng xuất</a></li>
+                {% else %}
+                <li><a href="/login" id="auth-link">Đăng nhập/Đăng ký</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="intro">
+            <h1>Chào mừng đến với website tạo ảnh nghệ thuật</h1>
+            <p>Đây là một trang web cung cấp các dịch vụ tạo hình ảnh các bức tranh bằng DCGAN và cGAN. Bạn có thể tạo ảnh ngẫu nhiên hoặc tải lên ảnh phác họa để tạo ảnh chi tiết hơn.</p>
+        </section>
+        <section class="search-bar">
+            <input type="text" id="search-input" placeholder="Tìm kiếm...">
+            <button id="search-btn">Tìm kiếm</button>
+        </section>
+        <section class="generate-random">
+            <button id="generate-random-btn">Tạo ảnh ngẫu nhiên (DCGAN)</button>
+        </section>
+        <section class="upload-and-generate">
+            <input type="file" id="upload-image" accept="image/*">
+            <button id="generate-from-upload-btn">Tạo ảnh chi tiết từ ảnh phác thảo (cGAN)</button>
+        </section>
+        <section class="sample-images">
+            <h2>Hình ảnh mẫu</h2>
+            <div class="sample-gallery-container">
+                <div class="sample-gallery" id="sample-gallery">
+                    <!-- Các ảnh sẽ được thêm bằng HTML -->
+                    <img src="../static/sample_images/sample1.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample2.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample3.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample4.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample5.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample6.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample7.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample8.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample9.jpeg" alt="Sample Image">
+                    <img src="../static/sample_images/sample10.jpeg" alt="Sample Image">
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-block">
+            <h3>Thông tin người thiết kế</h3>
+            <p>Tên: Đỗ Trung Phong</p>
+            <p>Email: 2002phong2002@gmail.com</p>
+        </div>
+        <div class="footer-block">
+            <h3>Chức năng của trang</h3>
+            <p>Tạo ảnh ngẫu nhiên thông qua DCGAN</p>
+            <p>Tạo ảnh chi tiết từ ảnh phác họa</p>
+            <p>Lưu ảnh vào bộ sưu tập</p>
+            <p>Tải xuống ảnh</p>
+        </div>
+    </footer>
+    <script>
+        document.getElementById("generate-from-upload-btn").addEventListener("click", function() {
+            var fileInput = document.getElementById("upload-image");
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append("file", file);
+
+            fetch("/generate_from_sketch", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                    } else {
+                        var originalImagePath = encodeURIComponent(data.original_image_path);
+                        var generatedImagePath = encodeURIComponent(data.generated_image_path);
+                        window.location.href = `/image_to_image_page?original_image_path=${originalImagePath}&generated_image_path=${generatedImagePath}`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        });
+
+
+        document.getElementById("generate-random-btn").addEventListener("click", function() {
+            fetch("/generate_random", {
+                    method: "POST"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                    } else {
+                        var generatedImagePath = encodeURIComponent(data.image_path);
+                        window.location.href = `/image_page?image_path=${generatedImagePath}`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        });
+
+        document.getElementById('create-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.querySelector('.generate-random').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+        document.getElementById('search-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.querySelector('.search-bar').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+        document.getElementById('search-btn').addEventListener('click', function() {
+            var query = document.getElementById('search-input').value;
+            window.location.href = `/search_results_page?query=${encodeURIComponent(query)}`;
+        });
+    </script>
+
+
+</body>
+
+</html>

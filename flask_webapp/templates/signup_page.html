@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            height: 70%;
+            display: flex;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .left-block,
+        .right-block {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .left-block {
+            background-color: white;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            flex-direction: column;
+        }
+        
+        .right-block {
+            background-color: #333;
+            color: white;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            text-align: center;
+        }
+        
+        .webapp-name {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .signup-form {
+            width: 80%;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .signup-form input[type="text"],
+        .signup-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .signup-form button {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .signup-form button:hover {
+            background-color: #555;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-message h2 {
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .welcome-message a:hover {
+            text-decoration: underline;
+        }
+        /* Added CSS for success message */
+        
+        #success-message {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-block">
+            <div class="welcome-message">
+                <h2>Create an Account</h2>
+                <p>Already have an account? <a href="/login">Log in</a></p>
+            </div>
+            <form class="signup-form" action="{{ url_for('register') }}" method="POST">
+                <input type="text" id="username" name="username" placeholder="Tên đăng nhập" required>
+                <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+                <input type="password" id="confirm-password" placeholder="Xác nhận mật khẩu" required>
+                <button type="submit">Đăng ký</button>
+            </form>
+            <!-- Added success message -->
+            <div id="success-message"></div>
+        </div>
+        <div class="right-block">
+            <div class="webapp-name">Generate Artistic Image Webapp</div>
+        </div>
+    </div>
+</body>
+
+</html>
