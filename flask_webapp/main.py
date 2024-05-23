@@ -9,7 +9,8 @@ import uuid
 from io import BytesIO
 from PIL import Image
 import cv2
-
+from tf_keras.models import load_model
+import h5py
 
 app = Flask(__name__)
 app.secret_key = 'anything'
@@ -21,7 +22,7 @@ print(database_name)
 
 
 # Hàm load model
-def load_model(model_dir, json_file="model_architecture.json", weights_file="model_weights.weights.h5"):
+def load_cgan_model(model_dir, json_file="model_architecture.json", weights_file="model_weights.weights.h5"):
     # Đường dẫn tới tệp JSON và HDF5
     json_path = os.path.join(model_dir, json_file)
     weights_path = os.path.join(model_dir, weights_file)
@@ -40,10 +41,11 @@ def load_model(model_dir, json_file="model_architecture.json", weights_file="mod
 
 
 cgan_model_dir = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/pix2pix_generator"
-cgan = load_model(cgan_model_dir)
+cgan = load_cgan_model(cgan_model_dir)
 
 
-dcgan_model_dir = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/dcgan_generator"
+
+dcgan_model_dir = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/dcgan_generator/portrait_final.h5"
 dcgan = load_model(dcgan_model_dir)
 
 
@@ -151,16 +153,23 @@ def display_generated_image(generator, seed_size):
 def generate_random():
     SEED_SIZE = 100
     noise = tf.random.normal([1, SEED_SIZE])
-    generated_image = dcgan.predict(noise)
-        
-    # Generate a random string to avoid filename collision
+    generated_image = dcgan(noise, training=False)
+    generated_image = 0.5 * generated_image + 0.5
+    generated_image = (generated_image * 255).numpy().astype(np.uint8)
+
+    generated_image = np.squeeze(generated_image, axis=0)
+    if generated_image.shape[-1] == 1:  # Handle grayscale images if needed
+        generated_image = np.squeeze(generated_image, axis=-1)
+
     random_string = str(uuid.uuid4())[:8]
 
     generated_image_folder = os.path.join(static_folder, "random_image_folder")
     os.makedirs(generated_image_folder, exist_ok=True)  # Ensure the folder exists
     generated_image_filename = f"generated_{random_string}.jpg"
     generated_image_path = os.path.join(generated_image_folder, generated_image_filename)
-    generated_image_pil = Image.fromarray((generated_image[0] * 255).astype(np.uint8))
+
+    # Convert the numpy array to an Image object and save it
+    generated_image_pil = Image.fromarray(generated_image)
     generated_image_pil.save(generated_image_path)
     
     # add_image(generated_image_path, generated_image_path)
