@@ -45,7 +45,7 @@ cgan = load_cgan_model(cgan_model_dir)
 
 
 
-dcgan_model_dir = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/dcgan_generator/portrait_final.h5"
+dcgan_model_dir = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/dcgan_generator/dcgan_generator.h5"
 dcgan = load_model(dcgan_model_dir)
 
 
