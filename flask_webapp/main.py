@@ -11,6 +11,7 @@ from PIL import Image
 import cv2
 from tf_keras.models import load_model
 import h5py
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'anything'

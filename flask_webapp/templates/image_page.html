@@ -107,6 +107,15 @@
             border-radius: 5px;
         }
         
+        .button-wrapper {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .save-button {
+            display: inline-block;
+        }
+        
         footer {
             background-color: #333;
             color: white;
@@ -227,7 +236,9 @@
             <form onsubmit="saveImage(event)">
                 <input type="text" id="collectionName" name="collectionName" placeholder="Tên bộ sưu tập" required>
                 <input type="text" id="imageName" name="imageName" placeholder="Tên ảnh" required>
-                <button type="submit" class="save-button">Lưu ảnh</button>
+                <div class="button-wrapper">
+                    <button type="submit" class="save-button">Lưu ảnh</button>
+                </div>
             </form>
         </div>
     </main>
