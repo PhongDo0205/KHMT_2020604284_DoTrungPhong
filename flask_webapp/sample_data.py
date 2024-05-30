@@ -26,26 +26,26 @@ cursor.executemany("INSERT INTO collections (name, user_id) VALUES (?, ?)", coll
 
 # Tạo dữ liệu mẫu cho bảng images
 images_data = [
-    ('/static/temp_folder/5bb815071a2ff76093fa4f594c8fdfb1.jpg', '/static/predict_folder/generated_5bb815071a2ff76093fa4f594c8fdfb1.jpg', 'Image 1', 1),
-    ('/static/temp_folder/399c37ae170e8c329a9bd623d5e4a2f6.jpg', '/static/predict_folder/generated_399c37ae170e8c329a9bd623d5e4a2f6.jpg', 'Image 2', 1),
-    ('/static/temp_folder/adolf-hitler_castle-battlements.jpg', '/static/predict_folder/generated_adolf-hitler_castle-battlements.jpg', 'Image 3', 2)
+    ('/static/random_image_folder/generated_3d32b0f5.jpg', '/static/random_image_folder/generated_3d32b0f5.jpg', 'Portrait 1', 1),
+    ('/static/random_image_folder/generated_7bfd6c6d.jpg', '/static/random_image_folder/generated_7bfd6c6d.jpg', 'Portrait 2', 1),
+    ('/static/random_image_folder/generated_93b2954c.jpg', '/static/random_image_folder/generated_93b2954c.jpg', 'Portrait 3', 1),
+    ('/static/random_image_folder/generated_e675df78.jpg', '/static/random_image_folder/generated_e675df78.jpg', 'Portrait 4', 1)
 ]
 cursor.executemany("INSERT INTO images (original_image_path, generated_image_path, title, collection_id) VALUES (?, ?, ?, ?)", images_data)
 
 # Tạo dữ liệu mẫu cho bảng tags
 tags_data = [
-    ('Tag 1',),
-    ('Tag 2',),
-    ('Tag 3',)
+    ('Portrait Image',),
+    ('Sketch to Image',)
 ]
 cursor.executemany("INSERT INTO tags (name) VALUES (?)", tags_data)
 
 # Tạo dữ liệu mẫu cho bảng image_tags (kết hợp ảnh và tag)
 image_tags_data = [
     (1, 1),
-    (1, 2),
-    (2, 2),
-    (3, 3)
+    (2, 1),
+    (3, 1),
+    (4, 1)
 ]
 cursor.executemany("INSERT INTO image_tags (image_id, tag_id) VALUES (?, ?)", image_tags_data)
 

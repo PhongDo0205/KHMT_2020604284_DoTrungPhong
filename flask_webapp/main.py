@@ -68,7 +68,6 @@ def add_image(original_image_path, generated_image_path, title):
         if conn:
             conn.close()
 
-
 # Hàm tạo bộ sưu tập trong csdl
 def add_collection(name, user_id):
     conn = sqlite3.connect(database_name)
@@ -79,7 +78,6 @@ def add_collection(name, user_id):
     ''', (name, user_id))
     conn.commit()
     conn.close()
-
 
 # Hàm thêm ảnh vào bộ sưu tập trong csdl
 def add_image_to_collection(image_id, collection_id):
@@ -104,6 +102,42 @@ def get_user_id(username):
     if result:
         return result[0]
     return None
+
+# Hàm kiểm tra nếu ảnh đã tồn tại
+def get_image_id_by_path(generated_image_path):
+    conn = sqlite3.connect(database_name)
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM images WHERE generated_image_path = ?', (generated_image_path,))
+    image = cursor.fetchone()
+    conn.close()
+    return image[0] if image else None
+
+# Hàm lấy collection id
+def get_collection_id(collection_name, user_id):
+    conn = sqlite3.connect(database_name)
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM collections WHERE name = ? AND user_id = ?', (collection_name, user_id))
+    collection = cursor.fetchone()
+    conn.close()
+    return collection[0] if collection else None
+
+# Hàm lấy tag id
+def get_tag_id_by_image(image_id):
+    conn = sqlite3.connect(database_name)
+    cursor = conn.cursor()
+    cursor.execute('SELECT tag_id FROM image_tags WHERE image_id = ?', (image_id,))
+    tag = cursor.fetchone()
+    conn.close()
+    return tag[0] if tag else None
+
+# Hàm thêm tag vào ảnh
+def add_tag_to_image(image_id, tag_id):
+    conn = sqlite3.connect(database_name)
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO image_tags (image_id, tag_id) VALUES (?, ?)', (image_id, tag_id))
+    conn.commit()
+    conn.close()
+
 
 
 
@@ -311,6 +345,7 @@ def register():
 #     conn.close()
 #     return render_template('search_results.html', query=query, results=results, logged_in=logged_in)
 
+
 # # Tìm kiếm
 @app.route('/search_results_page')
 def search_results_page():
@@ -342,9 +377,10 @@ def search_results_page():
     img_rs = cursor.fetchall()
     print(img_rs)
 
-    results = image_results + collection_results
-    print(results)
-    return render_template('search_results_page.html', results=results, logged_in=logged_in)
+    combined_results = list(set(image_results + collection_results))
+    print("Combined Results:", combined_results)
+
+    return render_template('search_results_page.html', results=combined_results, logged_in=logged_in)
 
 
 # test
@@ -407,10 +443,9 @@ def save_image():
     data = request.get_json()
     collection_name = data.get('collection_name')
     image_name = data.get('image_name')
-    original_image_path = data.get('originalImagePath')
-    original_image_path =  original_image_path.replace(static_folder, "/static").replace("\\", "/")
-    generated_image_path = data.get('generatedImagePath')
-    generated_image_path = generated_image_path.replace(static_folder, "/static").replace("\\", "/")
+    original_image_path = data.get('originalImagePath').replace(static_folder, "/static").replace("\\", "/")
+    generated_image_path = data.get('generatedImagePath').replace(static_folder, "/static").replace("\\", "/")
+    new_tag_id = data.get('tag_id')  # Lấy tag_id từ dữ liệu gửi lên từ front end
     username = session.get('username')
 
     if not username:
@@ -420,29 +455,22 @@ def save_image():
     if not user_id:
         return jsonify({'error': 'User not found'}), 404
 
-    conn = sqlite3.connect(database_name)
-    cursor = conn.cursor()
-    cursor.execute('SELECT id FROM collections WHERE name = ? AND user_id = ?', (collection_name, user_id))
-    collection = cursor.fetchone()
-
-    print("collection id: ", collection[0])
-    collection_id = 0
-    if collection:
-        collection_id = collection[0]
-    else:
+    collection_id = get_collection_id(collection_name, user_id)
+    if not collection_id:
         add_collection(collection_name, user_id)
-        collection_id = cursor.lastrowid
+        collection_id = get_collection_id(collection_name, user_id)
 
-    image_id = add_image(original_image_path, generated_image_path, image_name)  
-    print("image id: ", image_id)
+    image_id = get_image_id_by_path(generated_image_path)
+    if not image_id:
+        image_id = add_image(original_image_path, generated_image_path, image_name)
+    
     add_image_to_collection(image_id, collection_id)
 
-    conn.commit()
-    conn.close()
+    tag_id = get_tag_id_by_image(image_id)
+    if not tag_id:
+        add_tag_to_image(image_id, new_tag_id)
 
     return jsonify({'message': 'Image saved successfully'}), 200
-
-
 
 
 

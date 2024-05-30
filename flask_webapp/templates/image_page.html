@@ -147,6 +147,7 @@
             const imageName = document.getElementById('imageName').value;
             const originalImagePath = '{{ image_path }}';
             const generatedImagePath = '{{ image_path }}';
+            const tag_id = '1';
 
             if (loggedIn) {
                 if (collectionName && imageName) {
@@ -159,7 +160,8 @@
                                 collection_name: collectionName,
                                 image_name: imageName,
                                 originalImagePath: originalImagePath,
-                                generatedImagePath: generatedImagePath
+                                generatedImagePath: generatedImagePath,
+                                tag_id: tag_id
                             })
                         })
                         .then(response => {
