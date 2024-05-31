@@ -8,11 +8,6 @@ from PIL import Image
 import keras
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
 import h5py
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-from tensorflow.keras import layers
-from tensorflow.keras import models
-from tensorflow.keras.models import Sequential, Model, load_model
-from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Activation, Concatenate
 
 
 # Định nghĩa kích thước ảnh đầu vào cho generator
@@ -28,12 +23,12 @@ def preprocess_test_image(image_path):
 
 
 def generate_image(generator, input_image):
-    input_image = tf.image.resize(input_image, (299, 299))  # Thay đổi kích thước của ảnh đầu vào
-    input_image = tf.expand_dims(input_image, 0)  # Thêm chiều batch
-    generated_image = generator(input_image, training=False)[0]
-    # Xóa dòng code dưới để chỉ thực hiện resize ảnh một lần
-    # generated_image = tf.image.resize(generated_image, (299, 299))  # Thay đổi kích thước của ảnh được sinh ra
+    # Thay đổi kích thước của ảnh đầu vào
+    input_image_resized = tf.image.resize(input_image, (256, 256))
+    input_image_resized = tf.expand_dims(input_image_resized, 0)  # Thêm chiều batch
+    generated_image = generator(input_image_resized, training=False)[0]
     return generated_image
+
 
 
 def calculate_fid_pix2pix(real_activations, fake_activations):
@@ -55,27 +50,27 @@ def calculate_fid_pix2pix(real_activations, fake_activations):
     return fid
 
 
-def evaluate_generator_FID(generator, test_folder):
+def evaluate_generator_FID(generator, test_images):
     # Load InceptionV3 model pretrained on ImageNet
     inception_model = InceptionV3(include_top=False, pooling='avg', input_shape=[299, 299, 3])
 
     real_activations = []
     fake_activations = []
 
-    # Tải ảnh từ thư mục test
-    test_images = load_images_from_folder(test_folder)
 
     # Tính toán kích hoạt cho ảnh thật
     for image in test_images:
         original_image_resized = tf.image.resize(image, (299, 299))
-        real_activations.append(inception_model.predict(preprocess_input(np.expand_dims(original_image_resized, axis=0))))
+        expanded_image = np.expand_dims(original_image_resized, axis=0).copy()  # Tạo bản sao trước khi thay đổi
+        real_activations.append(inception_model.predict(preprocess_input(expanded_image)))
 
     real_activations = np.concatenate(real_activations, axis=0)
 
     # Tính toán kích hoạt cho ảnh giả
     for image in test_images:
         generated_image = generate_image(generator, image)
-        fake_activations.append(inception_model.predict(preprocess_input(np.expand_dims(generated_image, axis=0))))
+        expanded_image = np.expand_dims(generated_image, axis=0).copy()  # Tạo bản sao trước khi thay đổi
+        fake_activations.append(inception_model.predict(preprocess_input(expanded_image)))
 
     fake_activations = np.concatenate(fake_activations, axis=0)
 
@@ -87,26 +82,23 @@ def evaluate_generator_FID(generator, test_folder):
 
 def load_images_from_folder(folder_path):
     images = []
+    count = 0
     for filename in os.listdir(folder_path):
+        if count >= 100 or count == len(os.listdir(folder_path)):
+            break
         img_path = os.path.join(folder_path, filename)
         if os.path.isfile(img_path):
             image = preprocess_test_image(img_path)
             images.append(image)
+            count += 1
     return images
 
 
-def load_model_with_batch_shape(model_path):
-    model = Sequential()
-    inputs = Input(batch_shape=(256, 256, 3))
-    model = Model(inputs=inputs)
-    model = load_model(model_path)
-    return model
-
 
 # Load generator model
-generator_file = 'D:/KHMT_2020604284_DoTrungPhong/models/cgan_generator.h5'
-# generator = load_model_with_batch_shape(generator_file)
-generator = load_model(generator_file)
+generator_file = 'D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/pix2pix_generator/cgan_generator.h5'
+generator = keras.models.load_model(generator_file)
 test_folder = 'C:/Users/DELL/Pictures/fake'
-fid = evaluate_generator_FID(generator, test_folder)
+test_images = load_images_from_folder(test_folder)
+fid = evaluate_generator_FID(generator, test_images)
 print("Fréchet Inception Distance (FID):", fid)

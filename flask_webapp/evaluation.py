@@ -5,8 +5,8 @@ import cv2
 from scipy.linalg import sqrtm
 # from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input
 from PIL import Image
-import keras
-from keras.applications.inception_v3 import InceptionV3, preprocess_input
+import tf_keras as keras
+from tf_keras.applications.inception_v3 import InceptionV3, preprocess_input
 import h5py
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -70,7 +70,7 @@ def load_images_from_directory(image_dir):
     return images
 
 
-model_folder = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model"
+model_folder = "D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model/dcgan_generator"
 # dcgan = keras.models.load_model(os.path.join("D:/KHMT_2020604284_DoTrungPhong/flask_webapp/model", 'dcgan_generator.h5'))
 
 # Cố gắng tải mô hình với compile=False
@@ -97,9 +97,9 @@ except Exception as e:
 # dcgan.compile(loss='binary_crossentropy', optimizer=generator_optimizer)
 
 
-seed_size = 123
+seed_size = 100
 
-validation_image_dir = "D:/KHMT_2020604284_DoTrungPhong/portrait_painting"
+validation_image_dir = "D:/DATN/datasets/portrait_painting"
 n_samples = 150
 real_images = load_images_from_directory(validation_image_dir)
 score, fid = evaluate_GAN(dcgan, seed_size, n_samples, real_images)
