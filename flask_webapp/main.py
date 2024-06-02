@@ -151,11 +151,10 @@ def add_tag_to_image(image_id, tag_id):
 def add_new_user(username, password, email):
     conn = sqlite3.connect(database_name)
     cursor = conn.cursor()
-    hashed_password = generate_password_hash(password)  # Tạo hash cho mật khẩu
-    cursor.execute('''
-    INSERT INTO users (username, password, email)
-    VALUES (?, ?, ?)
-    ''', (username, hashed_password, email))
+    users_data = [
+    (username, generate_password_hash(password), email),
+    ]
+    cursor.executemany("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", users_data)
     conn.commit()
     conn.close()
 
@@ -320,14 +319,19 @@ def register():
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
+        print(username)
+        print(password)
+        print(email)
         if username and password and email:
             add_new_user(username, password, email)
-            flash('Đăng ký thành công! Vui lòng đăng nhập.', 'success')
+            flash('Đăng ký thành công!', 'success')
             return redirect(url_for('login'))
         else:
-            flash('Vui lòng điền đầy đủ thông tin.', 'error')
+            print("error")
+            flash('Có lỗi xảy ra', 'error')
     return render_template('signup_page.html')
 
+ 
 
 
 # @app.route('/search')
@@ -448,7 +452,7 @@ def save_image():
     generated_image_path = data.get('generatedImagePath').replace(static_folder, "/static").replace("\\", "/")
     new_tag_id = data.get('tag_id')  # Lấy tag_id từ dữ liệu gửi lên từ front end
     username = session.get('username')
-
+    
     if not username:
         return jsonify({'error': 'User not logged in'}), 403
 
